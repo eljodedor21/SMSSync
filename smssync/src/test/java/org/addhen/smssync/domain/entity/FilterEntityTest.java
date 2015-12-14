@@ -21,7 +21,8 @@ import org.addhen.smssync.BaseRobolectricTestCase;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.google.common.truth.Truth.assertThat;
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Ushahidi Team <team@ushahidi.com>
@@ -37,12 +38,10 @@ public class FilterEntityTest extends BaseRobolectricTestCase {
 
     @Test
     public void shouldSetFilterEntity() {
-        assertThat(mFilterEntity).isNotNull();
-        assertThat(mFilterEntity).isInstanceOf(FilterEntity.class);
-        assertThat(mFilterEntity._id).isNotNull();
-        assertThat(mFilterEntity._id).isEqualTo(DomainEntityFixture.ID);
-        assertThat(mFilterEntity.status).isEqualTo(FilterEntity.Status.WHITELIST);
-        assertThat(mFilterEntity.phoneNumber)
-                .isEqualTo(DomainEntityFixture.getFilterEntity().phoneNumber);
+        assertNotNull(mFilterEntity);
+        assertNotNull(mFilterEntity._id);
+        assertEquals(DomainEntityFixture.ID, mFilterEntity._id);
+        assertEquals(FilterEntity.Status.WHITELIST, mFilterEntity.status);
+        assertEquals(DomainEntityFixture.getFilterEntity().phoneNumber, mFilterEntity.phoneNumber);
     }
 }

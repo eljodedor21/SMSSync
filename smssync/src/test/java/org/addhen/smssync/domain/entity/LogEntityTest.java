@@ -21,7 +21,8 @@ import org.addhen.smssync.BaseRobolectricTestCase;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.google.common.truth.Truth.assertThat;
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Ushahidi Team <team@ushahidi.com>
@@ -37,9 +38,9 @@ public class LogEntityTest extends BaseRobolectricTestCase {
 
     @Test
     public void shouldSetLogEntity() {
-        assertThat(mLogEntity).isNotNull();
-        assertThat(mLogEntity._id).isNotNull();
-        assertThat(mLogEntity._id).isEqualTo(DomainEntityFixture.getLogEntity()._id);
-        assertThat(mLogEntity.message).isEqualTo(DomainEntityFixture.getLogEntity().message);
+        assertNotNull(mLogEntity);
+        assertNotNull(mLogEntity._id);
+        assertEquals(DomainEntityFixture.getLogEntity()._id, mLogEntity._id);
+        assertEquals(DomainEntityFixture.getLogEntity().message, mLogEntity.message);
     }
 }

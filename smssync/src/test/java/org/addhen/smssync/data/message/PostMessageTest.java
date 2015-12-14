@@ -15,19 +15,13 @@
  * Ushahidi developers at team@ushahidi.com.
  */
 
-package org.addhen.smssync;
+package org.addhen.smssync.data.message;
 
 /**
+ * Test PostMessage
+ *
  * @author Ushahidi Team <team@ushahidi.com>
  */
-public class DefaultConfig {
+public class PostMessageTest {
 
-    /**
-     * The api level that Roboelectric will use to run the unit tests
-     */
-    public static final int EMULATE_SDK = 21;
-
-    private DefaultConfig() {
-        // No instance
-    }
 }

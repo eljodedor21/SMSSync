@@ -21,7 +21,8 @@ import org.addhen.smssync.BaseRobolectricTestCase;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.google.common.truth.Truth.assertThat;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 /**
  * @author Ushahidi Team <team@ushahidi.com>
@@ -37,29 +38,27 @@ public class MessageEntityTest extends BaseRobolectricTestCase {
 
     @Test
     public void shouldSetMessageEntity() {
-        assertThat(mMessageEntity).isNotNull();
-        assertThat(mMessageEntity).isInstanceOf(MessageEntity.class);
-        assertThat(mMessageEntity._id).isEqualTo(DomainEntityFixture.ID);
-        assertThat(mMessageEntity.deliveredMessageDate)
-                .isEqualTo(DomainEntityFixture.getMessageEntity().deliveredMessageDate);
-        assertThat(mMessageEntity.deliveryResultCode)
-                .isEqualTo(DomainEntityFixture.getMessageEntity().deliveryResultCode);
-        assertThat(mMessageEntity.deliveryResultMessage)
-                .isEqualTo(DomainEntityFixture.getMessageEntity().deliveryResultMessage);
-        assertThat(mMessageEntity.messageBody)
-                .isEqualTo(DomainEntityFixture.getMessageEntity().messageBody);
-        assertThat(mMessageEntity.messageFrom)
-                .isEqualTo(DomainEntityFixture.getMessageEntity().messageFrom);
-        assertThat(mMessageEntity.messageType)
-                .isEqualTo(DomainEntityFixture.getMessageEntity().messageType);
-        assertThat(mMessageEntity.messageUuid)
-                .isEqualTo(DomainEntityFixture.getMessageEntity().messageUuid);
-        assertThat(mMessageEntity.retries)
-                .isEqualTo(DomainEntityFixture.getMessageEntity().retries);
-        assertThat(mMessageEntity.sentResultCode)
-                .isEqualTo(DomainEntityFixture.getMessageEntity().sentResultCode);
-        assertThat(mMessageEntity.messageDate)
-                .isEqualTo(DomainEntityFixture.getMessageEntity().messageDate);
-        assertThat(mMessageEntity.status).isEqualTo(DomainEntityFixture.getMessageEntity().status);
+        assertNotNull(mMessageEntity);
+        assertEquals(DomainEntityFixture.ID, mMessageEntity._id);
+        assertEquals(DomainEntityFixture.getMessageEntity().deliveredMessageDate,
+                mMessageEntity.deliveredMessageDate);
+        assertEquals(DomainEntityFixture.getMessageEntity().deliveryResultCode,
+                mMessageEntity.deliveryResultCode);
+        assertEquals(DomainEntityFixture.getMessageEntity().deliveryResultMessage,
+                mMessageEntity.deliveryResultMessage);
+        assertEquals(DomainEntityFixture.getMessageEntity().messageBody,
+                mMessageEntity.messageBody);
+        assertEquals(DomainEntityFixture.getMessageEntity().messageFrom,
+                mMessageEntity.messageFrom);
+        assertEquals(DomainEntityFixture.getMessageEntity().messageType,
+                mMessageEntity.messageType);
+        assertEquals(DomainEntityFixture.getMessageEntity().messageUuid,
+                mMessageEntity.messageUuid);
+        assertEquals(DomainEntityFixture.getMessageEntity().retries, mMessageEntity.retries);
+        assertEquals(DomainEntityFixture.getMessageEntity().sentResultCode,
+                mMessageEntity.sentResultCode);
+        assertEquals(DomainEntityFixture.getMessageEntity().messageDate,
+                mMessageEntity.messageDate);
+        assertEquals(DomainEntityFixture.getMessageEntity().status, mMessageEntity.status);
     }
 }
