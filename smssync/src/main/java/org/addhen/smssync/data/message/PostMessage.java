@@ -91,7 +91,6 @@ public class PostMessage extends ProcessMessage {
         if (!mPrefsFactory.serviceEnabled().get()) {
             return false;
         }
-
         // Send auto response from phone not server
         if (mPrefsFactory.enableReply().get()) {
             // send auto response as SMS to user's phone

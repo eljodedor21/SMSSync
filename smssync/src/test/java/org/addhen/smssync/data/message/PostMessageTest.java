@@ -18,6 +18,7 @@
 package org.addhen.smssync.data.message;
 
 import com.addhen.android.raiburari.data.pref.BooleanPreference;
+import com.addhen.android.raiburari.data.pref.StringPreference;
 
 import org.addhen.smssync.data.PrefsFactory;
 import org.addhen.smssync.data.cache.FileManager;
@@ -41,6 +42,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -50,6 +54,10 @@ import static org.mockito.Mockito.verify;
  * @author Ushahidi Team <team@ushahidi.com>
  */
 public class PostMessageTest {
+
+    private static final String DEVICE_ID = "ID";
+
+    private static final String FROM = "000";
 
     private PostMessage mPostMessage;
 
@@ -62,6 +70,7 @@ public class PostMessageTest {
     @Mock
     private MessageDataSource mMockMessageDataSource;
 
+    @Mock
     private WebServiceDataSource mMockWebServiceDataSource;
 
     @Mock
@@ -77,6 +86,9 @@ public class PostMessageTest {
     private ProcessMessageResult mMockProcessMessageResult;
 
     @Mock
+    private SharedPreferences mMockSharedPreferences;
+
+    @Mock
     private PrefsFactory mMockPrefsFactory;
 
     @Mock
@@ -87,55 +99,82 @@ public class PostMessageTest {
     private SyncUrl mMockSyncUrl;
 
     @Mock
-    private SharedPreferences mSharedPreferences;
-
-    @Mock
-    BooleanPreference mBooleanPreference;
+    private BooleanPreference mMockBooleanPreference;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        mPostMessage = new PostMessage(mMockContext, mMockPrefsFactory, mMockMessageHttpClient,
+        // mMockPrefsFactory = spy(new PrefsFactory(mMockContext, mMockSharedPreferences));
+        mPostMessage = spy(new PostMessage(mMockContext, mMockPrefsFactory, mMockMessageHttpClient,
                 mMockMessageDataSource, mMockWebServiceDataSource, mMockFilterDataSource,
-                mMockProcessSms, mMockFileManager, mMockProcessMessageResult);
+                mMockProcessSms, mMockFileManager, mMockProcessMessageResult));
     }
 
     @Test
-    public void successfullyRouteSMSToSingleWebService() throws IOException {
+    public void successfullyRouteSMSToASingleWebService() throws IOException {
         List<SyncUrl> syncUrls = Arrays.asList(mMockSyncUrl);
 
-        final String fromField = "0000000";
+        stubNeedMethodsForSyncOperation(syncUrls);
+        verify(mMockMessageHttpClient, times(1))
+                .postSmsToWebService(syncUrls.get(0), mMockMessage, FROM, DEVICE_ID);
+    }
 
-        final String deviceId = "01234567";
-        given(mMockPrefsFactory.serviceEnabled()).willReturn(mBooleanPreference);
-        given(mBooleanPreference.get()).willReturn(true);
+    @Test
+    public void successfullyRouteSMSToTwoWebServices() throws IOException {
+        List<SyncUrl> syncUrls = Arrays.asList(mMockSyncUrl, mMockSyncUrl);
+
+        stubNeedMethodsForSyncOperation(syncUrls);
+        verify(mMockMessageHttpClient, times(2))
+                .postSmsToWebService(syncUrls.get(0), mMockMessage, FROM, DEVICE_ID);
+    }
+
+    private void stubNeedMethodsForSyncOperation(List<SyncUrl> syncUrls) {
+
+        //given(mMockBooleanPreference.get()).willReturn(true);
         // Enable SMSsync service
+        BooleanPreference serviceEnabled = mock(BooleanPreference.class);
+        given(mMockPrefsFactory.serviceEnabled())
+                .willReturn(serviceEnabled);
         given(mMockPrefsFactory.serviceEnabled().get()).willReturn(true);
 
-        given(mMockPrefsFactory.enableReply()).willReturn(mBooleanPreference);
-        given(mBooleanPreference.get()).willReturn(false);
         // Disable AutoReply
+        BooleanPreference booleanPreference = mock(BooleanPreference.class);
+        given(mMockPrefsFactory.enableReply())
+                .willReturn(booleanPreference);
         given(mMockPrefsFactory.enableReply().get()).willReturn(false);
+        doReturn(true).when(mPostMessage).isConnected();
 
-//        given(mMockWebServiceDataSource.get(SyncUrl.Status.ENABLED)).willReturn(syncUrls);
-        given(mMockPrefsFactory.enableWhitelist()).willReturn(mBooleanPreference);
-        given(mBooleanPreference.get()).willReturn(false);
+        given(mMockWebServiceDataSource.get(SyncUrl.Status.ENABLED)).willReturn(syncUrls);
+
         // Don't process whitelist
+        BooleanPreference enableWhitelist = mock(BooleanPreference.class);
+        given(mMockPrefsFactory.enableWhitelist()).willReturn(enableWhitelist);
         given(mMockPrefsFactory.enableWhitelist().get()).willReturn(false);
 
-        given(mMockPrefsFactory.enableBlacklist()).willReturn(mBooleanPreference);
-        given(mBooleanPreference.get()).willReturn(false);
-
         // Don't process blacklist
+        BooleanPreference enableBlackList = mock(BooleanPreference.class);
+        given(mMockPrefsFactory.enableBlacklist()).willReturn(enableBlackList);
         given(mMockPrefsFactory.enableBlacklist().get()).willReturn(false);
 
-        given(mMockMessage.getMessageFrom()).willReturn(fromField);
+        given(mMockMessage.getMessageFrom()).willReturn(FROM);
+        //Get UniqueID
+        StringPreference getUniquePreference = mock(StringPreference.class);
+        given(mMockPrefsFactory.uniqueId()).willReturn(getUniquePreference);
+        given(mMockPrefsFactory.uniqueId().get()).willReturn(DEVICE_ID);
 
-        given(mMockPrefsFactory.uniqueId().get()).willReturn(deviceId);
+        given(mMockMessage.getMessageType()).willReturn(Message.Type.PENDING);
+        // Disable replyFromServer
+        BooleanPreference enableReplyFromServer = mock(BooleanPreference.class);
+        given(mMockPrefsFactory.enableReplyFrmServer()).willReturn(enableReplyFromServer);
+        // Don't delete from server
+        BooleanPreference deleteFromInbox = mock(BooleanPreference.class);
+        given(mMockPrefsFactory.autoDelete()).willReturn(deleteFromInbox);
+        given(mMockPrefsFactory.autoDelete().get()).willReturn(false);
+        given(mMockMessageHttpClient
+                .postSmsToWebService(mMockSyncUrl, mMockMessage, mMockMessage.getMessageFrom(),
+                        mMockPrefsFactory.uniqueId().get())).willReturn(true);
 
-        mPostMessage.routePendingMessage(mMockMessage);
-
-        verify(mMockMessageHttpClient, times(1))
-                .postSmsToWebService(syncUrls.get(0), mMockMessage, fromField, deviceId);
+        mPostMessage.routeSms(mMockMessage);
+        verify(mMockWebServiceDataSource).get(SyncUrl.Status.ENABLED);
     }
 }
