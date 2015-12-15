@@ -104,7 +104,6 @@ public class PostMessageTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        // mMockPrefsFactory = spy(new PrefsFactory(mMockContext, mMockSharedPreferences));
         mPostMessage = spy(new PostMessage(mMockContext, mMockPrefsFactory, mMockMessageHttpClient,
                 mMockMessageDataSource, mMockWebServiceDataSource, mMockFilterDataSource,
                 mMockProcessSms, mMockFileManager, mMockProcessMessageResult));
@@ -130,7 +129,6 @@ public class PostMessageTest {
 
     private void stubNeedMethodsForSyncOperation(List<SyncUrl> syncUrls) {
 
-        //given(mMockBooleanPreference.get()).willReturn(true);
         // Enable SMSsync service
         BooleanPreference serviceEnabled = mock(BooleanPreference.class);
         given(mMockPrefsFactory.serviceEnabled())
