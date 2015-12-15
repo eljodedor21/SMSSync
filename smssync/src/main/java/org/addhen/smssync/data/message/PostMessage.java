@@ -29,9 +29,9 @@ import org.addhen.smssync.data.entity.QueuedMessages;
 import org.addhen.smssync.data.entity.SmssyncResponse;
 import org.addhen.smssync.data.entity.SyncUrl;
 import org.addhen.smssync.data.net.MessageHttpClient;
-import org.addhen.smssync.data.repository.datasource.filter.FilterDataSourceFactory;
-import org.addhen.smssync.data.repository.datasource.message.MessageDataSourceFactory;
-import org.addhen.smssync.data.repository.datasource.webservice.WebServiceDataSourceFactory;
+import org.addhen.smssync.data.repository.datasource.filter.FilterDataSource;
+import org.addhen.smssync.data.repository.datasource.message.MessageDataSource;
+import org.addhen.smssync.data.repository.datasource.webservice.WebServiceDataSource;
 import org.addhen.smssync.data.util.Logger;
 import org.addhen.smssync.data.util.Utility;
 import org.addhen.smssync.smslib.sms.ProcessSms;
@@ -65,14 +65,14 @@ public class PostMessage extends ProcessMessage {
     @Inject
     public PostMessage(Context context, PrefsFactory prefsFactory,
             MessageHttpClient messageHttpClient,
-            MessageDataSourceFactory messageDataSourceFactory,
-            WebServiceDataSourceFactory webServiceDataSourceFactory,
-            FilterDataSourceFactory filterDataSourceFactory,
+            MessageDataSource messageDataSource,
+            WebServiceDataSource webServiceDataSource,
+            FilterDataSource filterDataSource,
             ProcessSms processSms,
             FileManager fileManager,
             ProcessMessageResult processMessageResult) {
-        super(context, prefsFactory, messageDataSourceFactory, webServiceDataSourceFactory,
-                filterDataSourceFactory, processSms, fileManager);
+        super(context, prefsFactory, messageDataSource, webServiceDataSource,
+                filterDataSource, processSms, fileManager);
 
         mMessageHttpClient = messageHttpClient;
         mProcessMessageResult = processMessageResult;
@@ -97,12 +97,12 @@ public class PostMessage extends ProcessMessage {
             // send auto response as SMS to user's phone
             logActivities(R.string.auto_response_sent);
             Message msg = new Message();
-            msg.messageBody = mPrefsFactory.reply().get();
-            msg.messageFrom = message.messageFrom;
-            msg.messageType = message.messageType;
+            msg.setMessageBody(mPrefsFactory.reply().get());
+            msg.setMessageFrom(message.getMessageFrom());
+            msg.setMessageType(message.getMessageType());
             mProcessSms.sendSms(map(msg), false);
         }
-        if (Utility.isConnected(mContext)) {
+        if (isConnected()) {
             List<SyncUrl> syncUrlList = mWebServiceDataSource
                     .get(SyncUrl.Status.ENABLED);
             List<Filter> filters = mFilterDataSource.getFilters();
@@ -110,7 +110,7 @@ public class PostMessage extends ProcessMessage {
                 // Process if white-listing is enabled
                 if (mPrefsFactory.enableWhitelist().get()) {
                     for (Filter filter : filters) {
-                        if (filter.phoneNumber.equals(message.messageFrom)) {
+                        if (filter.getPhoneNumber().equals(message.getMessageFrom())) {
                             if (postMessage(message, syncUrl)) {
                                 postToSentBox(message);
                                 deleteFromSmsInbox(message);
@@ -125,10 +125,10 @@ public class PostMessage extends ProcessMessage {
                 if (mPrefsFactory.enableBlacklist().get()) {
                     for (Filter filter : filters) {
 
-                        if (filter.phoneNumber.equals(message.messageFrom)) {
+                        if (filter.getPhoneNumber().equals(message.getMessageFrom())) {
                             Logger.log("message",
-                                    " from:" + message.messageFrom + " filter:"
-                                            + filter.phoneNumber);
+                                    " from:" + message.getMessageFrom() + " filter:"
+                                            + filter.getPhoneNumber());
                             return false;
                         } else {
                             if (postMessage(message, syncUrl)) {
@@ -192,7 +192,7 @@ public class PostMessage extends ProcessMessage {
             if (mPrefsFactory.enableWhitelist().get()) {
                 for (Filter filter : filters) {
                     for (Message message : messages) {
-                        if (filter.phoneNumber.equals(message.messageFrom)) {
+                        if (filter.getPhoneNumber().equals(message.getMessageFrom())) {
                             if (postMessage(message, syncUrl)) {
                                 postToSentBox(message);
                             }
@@ -204,10 +204,10 @@ public class PostMessage extends ProcessMessage {
             if (mPrefsFactory.enableBlacklist().get()) {
                 for (Filter filter : filters) {
                     for (Message msg : messages) {
-                        if (!filter.phoneNumber.equals(msg.messageFrom)) {
+                        if (!filter.getPhoneNumber().equals(msg.getMessageFrom())) {
                             Logger.log("message",
-                                    " from:" + msg.messageFrom + " filter:"
-                                            + filter.phoneNumber);
+                                    " from:" + msg.getMessageFrom() + " filter:"
+                                            + filter.getPhoneNumber());
                             if (postMessage(msg, syncUrl)) {
                                 postToSentBox(msg);
                             }
@@ -235,7 +235,7 @@ public class PostMessage extends ProcessMessage {
             if (mPrefsFactory.enableWhitelist().get()) {
                 for (Filter filter : filters) {
 
-                    if (filter.phoneNumber.equals(message.messageFrom)) {
+                    if (filter.getPhoneNumber().equals(message.getMessageFrom())) {
                         if (postMessage(message, syncUrl)) {
                             postToSentBox(message);
                         }
@@ -247,10 +247,10 @@ public class PostMessage extends ProcessMessage {
             if (mPrefsFactory.enableBlacklist().get()) {
                 for (Filter filter : filters) {
 
-                    if (!filter.phoneNumber.equals(message.messageFrom)) {
+                    if (!filter.getPhoneNumber().equals(message.getMessageFrom())) {
                         Logger.log("message",
-                                " from:" + message.messageFrom + " filter:"
-                                        + filter.phoneNumber);
+                                " from:" + message.getMessageFrom() + " filter:"
+                                        + filter.getPhoneNumber());
                         if (postMessage(message, syncUrl)) {
                             postToSentBox(message);
                         }
@@ -270,19 +270,19 @@ public class PostMessage extends ProcessMessage {
     private void sendSMSWithMessageResultsAPIEnabled(SyncUrl syncUrl, List<Message> msgs) {
         QueuedMessages messagesUUIDs = new QueuedMessages();
         for (Message msg : msgs) {
-            msg.messageType = Message.Type.TASK;
-            messagesUUIDs.getQueuedMessages().add(msg.messageUuid);
+            msg.setMessageType(Message.Type.TASK);
+            messagesUUIDs.getQueuedMessages().add(msg.getMessageUuid());
         }
 
         MessagesUUIDSResponse response =
                 mProcessMessageResult.sendQueuedMessagesPOSTRequest(syncUrl, messagesUUIDs);
         if (null != response && response.isSuccess() && response.hasUUIDs()) {
             for (Message msg : msgs) {
-                msg.messageType = Message.Type.TASK;
-                if (response.getUuids().contains(msg.messageUuid)) {
+                msg.setMessageType(Message.Type.TASK);
+                if (response.getUuids().contains(msg.getMessageUuid())) {
                     sendTaskSms(msg);
                     mFileManager.appendAndClose(mContext.getString(R.string.processed_task,
-                            msg.messageBody));
+                            msg.getMessageBody()));
                 }
             }
         }
@@ -290,7 +290,7 @@ public class PostMessage extends ProcessMessage {
 
     private void sendSMSWithMessageResultsAPIDisabled(List<Message> msgs) {
         for (Message msg : msgs) {
-            msg.messageType = Message.Type.TASK;
+            msg.setMessageType(Message.Type.TASK);
             sendTaskSms(msg);
         }
     }
@@ -321,8 +321,8 @@ public class PostMessage extends ProcessMessage {
                 && syncUrl.getKeywordStatus() == SyncUrl.KeywordStatus.ENABLED) {
             List<String> keywords = new ArrayList<>(
                     Arrays.asList(syncUrl.getKeywords().split(",")));
-            if (filterByKeywords(message.messageBody, keywords) || filterByRegex(
-                    message.messageBody, keywords)) {
+            if (filterByKeywords(message.getMessageBody(), keywords) || filterByRegex(
+                    message.getMessageBody(), keywords)) {
                 return postToWebService(message, syncUrl);
             }
         }
@@ -331,10 +331,10 @@ public class PostMessage extends ProcessMessage {
 
     private boolean postToWebService(Message message, SyncUrl syncUrl) {
         boolean posted;
-        if (message.messageType == Message.Type.PENDING) {
+        if (message.getMessageType().equals(Message.Type.PENDING)) {
             Logger.log(TAG, "Process message with keyword filtering enabled " + message);
             posted = mMessageHttpClient.postSmsToWebService(syncUrl, message,
-                    message.messageFrom, mPrefsFactory.uniqueId().get());
+                    message.getMessageFrom(), mPrefsFactory.uniqueId().get());
             // Process server side response so they are sent as SMS
             smsServerResponse(mMessageHttpClient.getServerSuccessResp());
         } else {
@@ -433,78 +433,7 @@ public class PostMessage extends ProcessMessage {
         return mErrorMessage;
     }
 
-    public static class Builder {
-
-        private Context mContext;
-
-        private PrefsFactory mPrefsFactory;
-
-        private MessageHttpClient mMessageHttpClient;
-
-        private MessageDataSourceFactory mMessageDataSourceFactory;
-
-        private WebServiceDataSourceFactory mWebServiceDataSourceFactory;
-
-        private FilterDataSourceFactory mFilterDataSourceFactory;
-
-        private ProcessSms mProcessSms;
-
-        private FileManager mFileManager;
-
-        private ProcessMessageResult mProcessMessageResult;
-
-        public Builder setContext(Context context) {
-            mContext = context;
-            return this;
-        }
-
-        public Builder setPrefsFactory(PrefsFactory prefsFactory) {
-            mPrefsFactory = prefsFactory;
-            return this;
-        }
-
-        public Builder setMessageHttpClient(MessageHttpClient messageHttpClient) {
-            mMessageHttpClient = messageHttpClient;
-            return this;
-        }
-
-        public Builder setMessageDataSourceFactory(
-                MessageDataSourceFactory messageDataSourceFactory) {
-            mMessageDataSourceFactory = messageDataSourceFactory;
-            return this;
-        }
-
-        public Builder setWebServiceDataSourceFactory(
-                WebServiceDataSourceFactory webServiceDataSourceFactory) {
-            mWebServiceDataSourceFactory = webServiceDataSourceFactory;
-            return this;
-        }
-
-        public Builder setFilterDataSourceFactory(FilterDataSourceFactory filterDataSourceFactory) {
-            mFilterDataSourceFactory = filterDataSourceFactory;
-            return this;
-        }
-
-        public Builder setProcessSms(ProcessSms processSms) {
-            mProcessSms = processSms;
-            return this;
-        }
-
-        public Builder setFileManager(FileManager fileManager) {
-            mFileManager = fileManager;
-            return this;
-        }
-
-        public Builder setProcessMessageResult(ProcessMessageResult processMessageResult) {
-            mProcessMessageResult = processMessageResult;
-            return this;
-        }
-
-        public PostMessage build() {
-            return new PostMessage(mContext, mPrefsFactory, mMessageHttpClient,
-                    mMessageDataSourceFactory, mWebServiceDataSourceFactory,
-                    mFilterDataSourceFactory,
-                    mProcessSms, mFileManager, mProcessMessageResult);
-        }
+    public boolean isConnected() {
+        return Utility.isConnected(mContext);
     }
 }

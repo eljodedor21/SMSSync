@@ -118,13 +118,13 @@ public class MessageHttpClient extends BaseHttpClient {
         getParams().clear();
         setHeader("Content-Type", syncScheme.getContentType());
         addParam(syncScheme.getKey(SyncScheme.SyncDataKey.SECRET), syncUrl.getSecret());
-        addParam(syncScheme.getKey(SyncScheme.SyncDataKey.FROM), message.messageFrom);
-        addParam(syncScheme.getKey(SyncScheme.SyncDataKey.MESSAGE), message.messageBody);
+        addParam(syncScheme.getKey(SyncScheme.SyncDataKey.FROM), message.getMessageFrom());
+        addParam(syncScheme.getKey(SyncScheme.SyncDataKey.MESSAGE), message.getMessageBody());
         addParam(syncScheme.getKey(SyncScheme.SyncDataKey.SENT_TIMESTAMP),
-                String.valueOf(message.messageDate.getTime())
+                String.valueOf(message.getMessageDate().getTime())
         );
         addParam(syncScheme.getKey(SyncScheme.SyncDataKey.SENT_TO), toNumber);
-        addParam(syncScheme.getKey(SyncScheme.SyncDataKey.MESSAGE_ID), message.messageUuid);
+        addParam(syncScheme.getKey(SyncScheme.SyncDataKey.MESSAGE_ID), message.getMessageUuid());
         addParam(syncScheme.getKey(SyncScheme.SyncDataKey.DEVICE_ID), deviceId);
         try {
             setHttpEntity(format);

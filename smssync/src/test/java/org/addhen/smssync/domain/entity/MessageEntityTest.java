@@ -39,26 +39,28 @@ public class MessageEntityTest extends BaseRobolectricTestCase {
     @Test
     public void shouldSetMessageEntity() {
         assertNotNull(mMessageEntity);
-        assertEquals(DomainEntityFixture.ID, mMessageEntity._id);
-        assertEquals(DomainEntityFixture.getMessageEntity().deliveredMessageDate,
-                mMessageEntity.deliveredMessageDate);
-        assertEquals(DomainEntityFixture.getMessageEntity().deliveryResultCode,
-                mMessageEntity.deliveryResultCode);
-        assertEquals(DomainEntityFixture.getMessageEntity().deliveryResultMessage,
-                mMessageEntity.deliveryResultMessage);
-        assertEquals(DomainEntityFixture.getMessageEntity().messageBody,
-                mMessageEntity.messageBody);
-        assertEquals(DomainEntityFixture.getMessageEntity().messageFrom,
-                mMessageEntity.messageFrom);
-        assertEquals(DomainEntityFixture.getMessageEntity().messageType,
-                mMessageEntity.messageType);
-        assertEquals(DomainEntityFixture.getMessageEntity().messageUuid,
-                mMessageEntity.messageUuid);
-        assertEquals(DomainEntityFixture.getMessageEntity().retries, mMessageEntity.retries);
-        assertEquals(DomainEntityFixture.getMessageEntity().sentResultCode,
-                mMessageEntity.sentResultCode);
-        assertEquals(DomainEntityFixture.getMessageEntity().messageDate,
-                mMessageEntity.messageDate);
-        assertEquals(DomainEntityFixture.getMessageEntity().status, mMessageEntity.status);
+        assertEquals(DomainEntityFixture.ID, mMessageEntity.getId());
+        assertEquals(DomainEntityFixture.getMessageEntity().getDeliveredMessageDate(),
+                mMessageEntity.getDeliveredMessageDate());
+        assertEquals(DomainEntityFixture.getMessageEntity().getDeliveryResultCode(),
+                mMessageEntity.getDeliveryResultCode());
+        assertEquals(DomainEntityFixture.getMessageEntity().getDeliveryResultMessage(),
+                mMessageEntity.getDeliveryResultMessage());
+        assertEquals(DomainEntityFixture.getMessageEntity().getMessageBody(),
+                mMessageEntity.getMessageBody());
+        assertEquals(DomainEntityFixture.getMessageEntity().getMessageFrom(),
+                mMessageEntity.getMessageFrom());
+        assertEquals(DomainEntityFixture.getMessageEntity().getMessageType(),
+                mMessageEntity.getMessageType());
+        assertEquals(DomainEntityFixture.getMessageEntity().getMessageUuid(),
+                mMessageEntity.getMessageUuid());
+        assertEquals(DomainEntityFixture.getMessageEntity().getRetries(),
+                mMessageEntity.getRetries());
+        assertEquals(DomainEntityFixture.getMessageEntity().getSentResultCode(),
+                mMessageEntity.getSentResultCode());
+        assertEquals(DomainEntityFixture.getMessageEntity().getMessageDate(),
+                mMessageEntity.getMessageDate());
+        assertEquals(DomainEntityFixture.getMessageEntity().getStatus(),
+                mMessageEntity.getStatus());
     }
 }

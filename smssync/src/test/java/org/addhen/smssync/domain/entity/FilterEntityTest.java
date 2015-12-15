@@ -40,8 +40,9 @@ public class FilterEntityTest extends BaseRobolectricTestCase {
     public void shouldSetFilterEntity() {
         assertNotNull(mFilterEntity);
         assertNotNull(mFilterEntity._id);
-        assertEquals(DomainEntityFixture.ID, mFilterEntity._id);
-        assertEquals(FilterEntity.Status.WHITELIST, mFilterEntity.status);
-        assertEquals(DomainEntityFixture.getFilterEntity().phoneNumber, mFilterEntity.phoneNumber);
+        assertEquals(DomainEntityFixture.ID, mFilterEntity.getId());
+        assertEquals(FilterEntity.Status.WHITELIST, mFilterEntity.getStatus());
+        assertEquals(DomainEntityFixture.getFilterEntity().getPhoneNumber(),
+                mFilterEntity.getPhoneNumber());
     }
 }

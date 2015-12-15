@@ -40,7 +40,7 @@ public class LogEntityTest extends BaseRobolectricTestCase {
     public void shouldSetLogEntity() {
         assertNotNull(mLogEntity);
         assertNotNull(mLogEntity._id);
-        assertEquals(DomainEntityFixture.getLogEntity()._id, mLogEntity._id);
-        assertEquals(DomainEntityFixture.getLogEntity().message, mLogEntity.message);
+        assertEquals(DomainEntityFixture.getLogEntity().getId(), mLogEntity.getId());
+        assertEquals(DomainEntityFixture.getLogEntity().getMessage(), mLogEntity.getMessage());
     }
 }

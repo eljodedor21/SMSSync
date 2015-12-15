@@ -254,6 +254,7 @@ dependencies {
     // Test depedencies
     testCompile appTestDependencies.junit
     testCompile appTestDependencies.mockito
+    testCompile appTestDependencies.mockWebServer
     testApt appDependencies.daggerCompiler
 
     androidTestCompile appTestDependencies.mockito

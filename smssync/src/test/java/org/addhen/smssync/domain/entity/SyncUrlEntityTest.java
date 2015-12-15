@@ -39,7 +39,7 @@ public class SyncUrlEntityTest extends BaseRobolectricTestCase {
     @Test
     public void shouldSetWebServiceEntity() {
         assertNotNull(mWebServiceEntity);
-        assertEquals(DomainEntityFixture.ID, mWebServiceEntity._id);
+        assertEquals(DomainEntityFixture.ID, mWebServiceEntity.getId());
         assertEquals(DomainEntityFixture.getWebServiceEntity().getKeywords(),
                 mWebServiceEntity.getKeywords());
         assertEquals(DomainEntityFixture.getWebServiceEntity().getKeywordStatus(),
