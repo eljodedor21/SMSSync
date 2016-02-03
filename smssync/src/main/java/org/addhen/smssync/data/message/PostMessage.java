@@ -399,7 +399,7 @@ public class PostMessage extends ProcessMessage {
                     Logger.log(TAG, "Task " + task);
                     boolean secretOk = TextUtils.isEmpty(urlSecret) ||
                             urlSecret.equals(smssyncResponses.getPayload().getSecret());
-                    if (secretOk && task.equals("send")) {
+                    if ((secretOk) && (task != null) && (task.equals("send"))) {
                         if (mPrefsFactory.messageResultsAPIEnable().get()) {
                             sendSMSWithMessageResultsAPIEnabled(syncUrl,
                                     smssyncResponses.getPayload().getMessages());
