@@ -110,7 +110,7 @@ public class PostMessageTest {
     }
 
     @Test
-    public void successfullyRouteSMSToASingleWebService() throws IOException {
+    public void shouldSuccessfullyRouteSMSToASingleWebService() throws IOException {
         List<SyncUrl> syncUrls = Arrays.asList(mMockSyncUrl);
 
         stubNeedMethodsForSyncOperation(syncUrls);
@@ -119,12 +119,17 @@ public class PostMessageTest {
     }
 
     @Test
-    public void successfullyRouteSMSToTwoWebServices() throws IOException {
+    public void shouldSuccessfullyRouteSMSToTwoWebServices() throws IOException {
         List<SyncUrl> syncUrls = Arrays.asList(mMockSyncUrl, mMockSyncUrl);
 
         stubNeedMethodsForSyncOperation(syncUrls);
         verify(mMockMessageHttpClient, times(2))
                 .postSmsToWebService(syncUrls.get(0), mMockMessage, FROM, DEVICE_ID);
+    }
+
+    @Test
+    public void shouldSuccessfullyRouteSMSToSingleWebServiceWithServerResponse() {
+
     }
 
     private void stubNeedMethodsForSyncOperation(List<SyncUrl> syncUrls) {
