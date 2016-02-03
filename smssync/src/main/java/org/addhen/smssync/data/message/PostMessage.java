@@ -306,8 +306,9 @@ public class PostMessage extends ProcessMessage {
             return;
         }
 
-        if (response != null && response.getPayload() != null
-                && response.getPayload().getMessages().size() > 0) {
+        if ((response != null) && (response.getPayload() != null)
+                && (response.getPayload().getMessages() != null) && (
+                response.getPayload().getMessages().size() > 0)) {
             for (Message msg : response.getPayload().getMessages()) {
                 sendTaskSms(msg);
             }
@@ -350,6 +351,7 @@ public class PostMessage extends ProcessMessage {
             // Don't continue
             return;
         }
+        MessageHttpClient messageHttpClient = new MessageHttpClient(mContext, mFileManager);
         Logger.log(TAG, "performTask(): perform a task");
         logActivities(R.string.perform_task);
         List<SyncUrl> syncUrls = mWebServiceDataSource.get(SyncUrl.Status.ENABLED);
@@ -369,21 +371,21 @@ public class PostMessage extends ProcessMessage {
                 uriBuilder.append(urlSecretEncoded);
             }
 
-            mMessageHttpClient.setUrl(uriBuilder.toString());
+            messageHttpClient.setUrl(uriBuilder.toString());
             SmssyncResponse smssyncResponses = null;
             Gson gson = null;
             try {
-                mMessageHttpClient.execute();
+                messageHttpClient.execute();
                 gson = new Gson();
-                final String response = mMessageHttpClient.getResponse().body().string();
+                final String response = messageHttpClient.getResponse().body().string();
                 mFileManager.appendAndClose("HTTP Client Response: " + response);
                 smssyncResponses = gson.fromJson(response, SmssyncResponse.class);
             } catch (Exception e) {
                 Logger.log(TAG, "Task checking crashed " + e.getMessage() + " response: "
-                        + mMessageHttpClient.getResponse());
+                        + messageHttpClient.getResponse());
                 try {
                     mFileManager.appendAndClose(
-                            "Task crashed: " + e.getMessage() + " response: " + mMessageHttpClient
+                            "Task crashed: " + e.getMessage() + " response: " + messageHttpClient
                                     .getResponse().body().string());
                 } catch (IOException e1) {
                     e1.printStackTrace();

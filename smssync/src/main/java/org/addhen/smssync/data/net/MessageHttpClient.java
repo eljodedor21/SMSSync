@@ -29,6 +29,7 @@ import org.addhen.smssync.data.entity.Message;
 import org.addhen.smssync.data.entity.SmssyncResponse;
 import org.addhen.smssync.data.entity.SyncScheme;
 import org.addhen.smssync.data.entity.SyncUrl;
+import org.addhen.smssync.data.util.Logger;
 import org.addhen.smssync.domain.entity.HttpNameValuePair;
 import org.addhen.smssync.domain.util.DataFormatUtil;
 
@@ -73,6 +74,7 @@ public class MessageHttpClient extends BaseHttpClient {
      */
     public boolean postSmsToWebService(SyncUrl syncUrl, Message message, String toNumber,
             String deviceId) {
+        Logger.log(MessageHttpClient.class.getSimpleName(), "posting messages");
         initRequest(syncUrl, message, toNumber, deviceId);
         final Gson gson = new Gson();
         try {
