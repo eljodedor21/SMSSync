@@ -84,16 +84,16 @@ public abstract class ProcessMessage {
 
     public MessageModel map(Message message) {
         MessageModel messageModel = new MessageModel();
-        messageModel.setId(messageModel.getId());
+        messageModel.setId(message.getId());
         messageModel.setMessageBody(message.getMessageBody());
         messageModel.setMessageDate(message.getMessageDate());
         messageModel.setMessageFrom(message.getMessageFrom());
         messageModel.setMessageUuid(message.getMessageUuid());
         messageModel.setSentResultMessage(message.getSentResultMessage());
         messageModel.setSentResultCode(message.getSentResultCode());
-        messageModel.setMessageType(MessageModel.Type.valueOf(message.getMessageType().name()));
+        messageModel.setMessageType(map(message.getMessageType()));
         if (message.getStatus() != null) {
-            messageModel.setStatus(MessageModel.Status.valueOf(message.getStatus().name()));
+            messageModel.setStatus(map(message.getStatus()));
         } else {
             messageModel.setStatus(MessageModel.Status.UNCONFIRMED);
         }
@@ -104,15 +104,15 @@ public abstract class ProcessMessage {
 
     public Message map(MessageModel messageModel) {
         Message message = new Message();
-        message.setId(message.getId());
+        message.setId(messageModel.getId());
         message.setMessageBody(messageModel.getMessageBody());
         message.setMessageDate(messageModel.getMessageDate());
         message.setMessageFrom(messageModel.getMessageFrom());
         message.setMessageUuid(messageModel.getMessageUuid());
         message.setSentResultMessage(messageModel.getSentResultMessage());
         message.setSentResultCode(messageModel.getSentResultCode());
-        message.setMessageType(Message.Type.valueOf(messageModel.getMessageType().name()));
-        message.setStatus(Message.Status.valueOf(messageModel.getStatus().name()));
+        message.setMessageType(map(messageModel.getMessageType()));
+        message.setStatus(map(messageModel.getStatus()));
         message.setDeliveryResultCode(messageModel.getDeliveryResultCode());
         message.setDeliveryResultMessage(messageModel.getDeliveryResultMessage());
         return message;
@@ -215,5 +215,23 @@ public abstract class ProcessMessage {
         }
         mProcessSms.sendSms(map(message), false);
         return true;
+    }
+
+    private Message.Status map(MessageModel.Status status) {
+        return status != null ? Message.Status.valueOf(status.name())
+                : Message.Status.FAILED;
+    }
+
+    private MessageModel.Status map(Message.Status status) {
+        return status != null ? MessageModel.Status.valueOf(status.name())
+                : MessageModel.Status.UNCONFIRMED;
+    }
+
+    private Message.Type map(MessageModel.Type type) {
+        return type != null ? Message.Type.valueOf(type.name()) : Message.Type.PENDING;
+    }
+
+    private MessageModel.Type map(Message.Type type) {
+        return type != null ? MessageModel.Type.valueOf(type.name()) : MessageModel.Type.PENDING;
     }
 }

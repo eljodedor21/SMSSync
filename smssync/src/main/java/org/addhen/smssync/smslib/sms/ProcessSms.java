@@ -172,6 +172,9 @@ public class ProcessSms {
                         message.setMessageFrom(c.getString(c.getColumnIndex("address")));
                         message.setMessageBody(c.getString(c.getColumnIndex("body")));
                         message.setMessageUuid(getUuid());
+                        message.setMessageType(MessageModel.Type.PENDING);
+                        // Treat imported messages as failed
+                        message.setStatus(MessageModel.Status.FAILED);
                         messages.add(message);
                     } while (c.moveToNext());
                 }
@@ -204,7 +207,10 @@ public class ProcessSms {
                                 .getString(c.getColumnIndex(Telephony.Sms.Inbox.ADDRESS)));
                         message.setMessageBody(c
                                 .getString(c.getColumnIndex(Telephony.Sms.Inbox.BODY)));
-                        message.setMessageUuid(getUuid());
+
+                        message.setMessageType(MessageModel.Type.PENDING);
+                        // Treat imported messages as failed
+                        message.setStatus(MessageModel.Status.FAILED);
                         messages.add(message);
 
                     } while (c.moveToNext());

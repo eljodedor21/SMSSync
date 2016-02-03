@@ -98,18 +98,20 @@ public class MessageModelDataMapper {
     }
 
     public MessageEntity.Status map(MessageModel.Status status) {
-        return MessageEntity.Status.valueOf(status.name());
+        return status != null ? MessageEntity.Status.valueOf(status.name())
+                : MessageEntity.Status.FAILED;
     }
 
     public MessageModel.Status map(MessageEntity.Status status) {
-        return MessageModel.Status.valueOf(status.name());
+        return status != null ? MessageModel.Status.valueOf(status.name())
+                : MessageModel.Status.FAILED;
     }
 
     public MessageEntity.Type map(MessageModel.Type type) {
-        return MessageEntity.Type.valueOf(type.name());
+        return type != null ? MessageEntity.Type.valueOf(type.name()) : MessageEntity.Type.PENDING;
     }
 
     public MessageModel.Type map(MessageEntity.Type type) {
-        return MessageModel.Type.valueOf(type.name());
+        return type != null ? MessageModel.Type.valueOf(type.name()) : MessageModel.Type.PENDING;
     }
 }

@@ -103,6 +103,6 @@ public class MessageDataMapper {
     }
 
     public Message.Type map(MessageEntity.Type type) {
-        return Message.Type.valueOf(type.name());
+        return type !=null ? Message.Type.valueOf(type.name()) : Message.Type.PENDING;
     }
 }
