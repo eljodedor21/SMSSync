@@ -332,8 +332,8 @@ public class PostMessage extends ProcessMessage {
         boolean posted;
         if (message.getMessageType().equals(Message.Type.PENDING)) {
             Logger.log(TAG, "Process message with keyword filtering enabled " + message);
-            posted = mMessageHttpClient.postSmsToWebService(syncUrl, message,
-                    message.getMessageFrom(), mPrefsFactory.uniqueId().get());
+            posted = mMessageHttpClient.postSmsToWebService(syncUrl, message, getPhoneNumber(),
+                    mPrefsFactory.uniqueId().get());
             // Process server side response so they are sent as SMS
             smsServerResponse(mMessageHttpClient.getServerSuccessResp());
         } else {
@@ -434,5 +434,9 @@ public class PostMessage extends ProcessMessage {
 
     public boolean isConnected() {
         return Utility.isConnected(mContext);
+    }
+
+    public String getPhoneNumber() {
+        return Utility.getPhoneNumber(mContext, mPrefsFactory);
     }
 }
