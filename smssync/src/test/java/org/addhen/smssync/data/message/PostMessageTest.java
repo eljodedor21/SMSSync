@@ -173,8 +173,9 @@ public class PostMessageTest {
         BooleanPreference deleteFromInbox = mock(BooleanPreference.class);
         given(mMockPrefsFactory.autoDelete()).willReturn(deleteFromInbox);
         given(mMockPrefsFactory.autoDelete().get()).willReturn(false);
+        doReturn(FROM).when(mPostMessage).getPhoneNumber();
         given(mMockMessageHttpClient
-                .postSmsToWebService(mMockSyncUrl, mMockMessage, mMockMessage.getMessageFrom(),
+                .postSmsToWebService(mMockSyncUrl, mMockMessage, FROM,
                         mMockPrefsFactory.uniqueId().get())).willReturn(true);
 
         mPostMessage.routeSms(mMockMessage);
